@@ -1,0 +1,22 @@
+{
+	"short_name": "LangSheets",
+	"name": "LangSheets",
+	"description": "Crea actividades digitales en minútos",
+	"start_url": "/",
+	"display": "standalone",
+	"theme_color": "#000000",
+	"background_color": "#ffffff",
+	"icons": [
+		{
+			"src": "/logo.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		},
+		{
+			"src": "logo-192.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose": "any"
+		}
+	]
+}
