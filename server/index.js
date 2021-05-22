@@ -23,6 +23,10 @@ mongoose
 
 mongoose.set('debug', true);
 
+//Models
+
+require("./models/Activity");
+
 //Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -30,9 +34,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, '../build')));
 
 
-app.use("/api", (req, res) => {
-    res.send("Welcome to Langsheets API");
-})
+app.use("/api", require("./routes"));
 
 // Requests unhandled before will return the react app
 app.get('*', (req, res) => {
