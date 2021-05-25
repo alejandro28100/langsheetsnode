@@ -2,16 +2,34 @@ const mongoose = require("mongoose");
 
 const Activity = mongoose.model("Activity");
 
+async function getActivities(req, res) {
+    try {
+        const activities = await Activity.find({});
+        console.log(activities);
+        res.send(activities);
+    } catch (error) {
+        res.send(error)
+    }
+}
+
 async function getActivity(req, res) {
     const { id } = req.params;
 
     try {
         const document = await Activity.findById(id);
-        if (!document) return res.status(404).send();
+        if (!document) return res.status(404).send({
+            message: "The activity requested does not exists"
+        });
 
         res.send(document);
     } catch (error) {
-        res.status(500).send();
+        switch (error.name) {
+            //cast error happens when a string does not match the MongoDB _id structure
+            case "CastError":
+                res.status(404).send({ message: "The activity requested does not exists" });
+            default:
+                res.send(error);
+        }
     }
 
 
@@ -62,7 +80,7 @@ async function updateActivity(req, res) {
         res.send(doc);
 
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -71,7 +89,9 @@ async function deleteActivity(req, res) {
 
     try {
         await Activity.deleteOne({ _id: id })
-        res.send();
+        res.send({
+            message: 'sucess'
+        });
     } catch (error) {
         res.status(500).send(error);
     }
@@ -81,6 +101,7 @@ async function deleteActivity(req, res) {
 
 module.exports = {
     getActivity,
+    getActivities,
     createActivity,
     updateActivity,
     deleteActivity
