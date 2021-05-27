@@ -6,7 +6,7 @@ router.get('/', (req, res) => {
 
 router.use('/activities', require('./activities'));
 
-// Requests unhandled before will return the react app
+// Requests unhandled prefixed with /api will return a 404 status
 router.get('*', (req, res) => {
     res.status(404).send("Invalid API endpoint");
 });
