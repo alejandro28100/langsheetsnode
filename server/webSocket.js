@@ -1,6 +1,5 @@
 const { Server } = require("socket.io");
 
-
 const webSocket = server => {
 
     const io = new Server(server);
@@ -8,23 +7,35 @@ const webSocket = server => {
     io.use(registerUser);
 
     io.on('connection', (socket) => {
+        console.log(`> ${socket.username} connected to the server`)
 
-        // //Send all existing users to the client
-        socket.emit("users", getUsers(io));
+        socket.on('join-room', async (roomID) => {
+            console.log(`> Joining ${socket.username} (${socket.id}) to room ${roomID}`);
+            //store the roomID in the socket for future actions
+            socket.roomID = roomID;
+            //subscribe the socket to a given room
+            await socket.join(roomID);
+
+            console.log(`> Current users in room ${roomID}:`, await getUsersFromRoom(io, roomID));
+
+            //Send the new user to all the already connected users
+            socket.to(socket.roomID).emit("user-connected", {
+                userID: socket.id,
+                username: socket.username,
+            });
+
+            //Send all the connected users to the client that just connected
+            socket.emit("users", await getUsersFromRoom(io, socket.roomID));
+
+        })
 
         socket.on('action', (action) => {
-            socket.broadcast.emit('action', action);
+            socket.to(socket.roomID).emit('action', action);
         });
 
-        // Send the new user to all the existing users except to the one connected
-        socket.broadcast.emit("user-connected", {
-            userID: socket.id,
-            username: socket.username,
-        });
-
-        socket.on("disconnect", () => {
-            console.log(`${socket.username} disconnected`, socket.id,);
-            socket.broadcast.emit('user-disconnected', { username: socket.username, users: getUsers(io) });
+        socket.on("disconnect", async () => {
+            console.log(`> ${socket.username} disconnected from room ${socket.roomID}`);
+            socket.to(socket.roomID).emit('user-disconnected', { username: socket.username, users: await getUsersFromRoom(io, socket.roomID) });
         })
     });
 
@@ -32,16 +43,16 @@ const webSocket = server => {
 
 };
 
-function getUsers(io) {
-    let users = [];
+async function getUsersFromRoom(io, roomID) {
 
-    for (let [id, socket] of io.of("/").sockets) {
-        //Add the new users
-        users.push({
-            userID: id,
-            username: socket.username,
-        });
-    };
+    // return all Socket instances in the given room of the server
+    const sockets = await io.in(roomID).fetchSockets();
+
+    //Returns the username and id from ach individual Socket Instance
+    const users = sockets.map(({ username, id }) => ({
+        username,
+        userID: id
+    }));
 
     return users;
 }
@@ -49,7 +60,6 @@ function getUsers(io) {
 
 function registerUser(socket, next) {
     const username = socket.handshake.auth.username;
-
     if (!username) {
         return next(new Error('invalid username'));
     }
