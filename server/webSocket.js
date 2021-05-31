@@ -8,18 +8,13 @@ const webSocket = server => {
     io.use(registerUser);
 
     io.on('connection', (socket) => {
-        //Create a record of users to track them as they connect; (Not suitable when scaling up)
-        let users = [];
-        // console.log(io.of("/").sockets);
-        for (let [id, socket] of io.of("/").sockets) {
-            //Add the new users
-            users.push({
-                userID: id,
-                username: socket.username,
-            });
-        }
-        //Send all existing users to the client
-        socket.emit("users", users);
+
+        // //Send all existing users to the client
+        socket.emit("users", getUsers(io));
+
+        socket.on('action', (action) => {
+            socket.broadcast.emit('action', action);
+        });
 
         // Send the new user to all the existing users except to the one connected
         socket.broadcast.emit("user-connected", {
@@ -27,21 +22,29 @@ const webSocket = server => {
             username: socket.username,
         });
 
-
-        socket.on('action', (action) => {
-            // console.log('New action received: ' + action);
-            // console.log("Sending to all clients");
-            socket.broadcast.emit('action', action);
-        });
-
         socket.on("disconnect", () => {
-            console.log("Client disconnected");
+            console.log(`${socket.username} disconnected`, socket.id,);
+            socket.broadcast.emit('user-disconnected', { username: socket.username, users: getUsers(io) });
         })
     });
 
     return io;
 
 };
+
+function getUsers(io) {
+    let users = [];
+
+    for (let [id, socket] of io.of("/").sockets) {
+        //Add the new users
+        users.push({
+            userID: id,
+            username: socket.username,
+        });
+    };
+
+    return users;
+}
 
 
 function registerUser(socket, next) {
