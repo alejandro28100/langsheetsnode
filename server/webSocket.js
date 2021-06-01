@@ -16,7 +16,9 @@ const webSocket = server => {
             //subscribe the socket to a given room
             await socket.join(roomID);
 
-            console.log(`> Current users in room ${roomID}:`, await getUsersFromRoom(io, roomID));
+            const users = await getUsersFromRoom(io, roomID)
+
+            console.log(`> Current users in room ${roomID}:`, users);
 
             //Send the new user to all the already connected users
             socket.to(socket.roomID).emit("user-connected", {
@@ -25,9 +27,30 @@ const webSocket = server => {
             });
 
             //Send all the connected users to the client that just connected
-            socket.emit("users", await getUsersFromRoom(io, socket.roomID));
+            socket.emit("users", users);
+
+            //Choose a user to send the content to the new user
+
+            //Remove the current user from the users array
+            const filteredUsers = users.filter(user => user.userID != socket.id);
+
+            if (filteredUsers.length !== 0) {
+                const randomUserIndex = Math.floor(Math.random() * filteredUsers.length);
+                const randomUser = filteredUsers[randomUserIndex];
+
+                socket
+                    .to(randomUser.userID)
+                    .emit('send-updated-content', socket.id);
+                console.log(`> Ask ${randomUser.username} to send the updated content to ${socket.username}`);
+            }
+
+
 
         })
+
+        socket.on('send-updated-content', (userID, content) => {
+            socket.to(userID).emit('action', { type: 'update-content', content });
+        });
 
         socket.on('action', (action) => {
             socket.to(socket.roomID).emit('action', action);
