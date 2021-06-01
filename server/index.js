@@ -1,10 +1,11 @@
 const express = require("express"),
     path = require("path"),
     bodyParser = require("body-parser"),
-    mongoose = require("mongoose"),
     io = require("./webSocket"),
     http = require("http"),
-    cors = require('cors');
+    helmet = require("helmet");
+
+// cors = require('cors');
 
 require("dotenv").config();
 
@@ -16,27 +17,15 @@ const server = http.createServer(app);
 
 io(server);
 
-/*********************** Mongoose Configuration *******************************/
-
-mongoose
-    .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log('Connected to MongoDB');
-    })
-    .catch((err) => {
-        return console.error(err);
-    });
-
-mongoose.set('debug', true);
-
+require("./mongodb");
 //Models
-
 require("./models/Activity");
 
 //Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors())
+app.use(helmet());
+// app.use(cors())
 //Serve the files of the built React app folder
 app.use(express.static(path.resolve(__dirname, '../build')));
 
