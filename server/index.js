@@ -18,8 +18,6 @@ const server = http.createServer(app);
 io(server);
 
 require("./mongodb");
-//Models
-require("./models/Activity");
 
 //Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -30,7 +28,7 @@ app.use(helmet());
 app.use(express.static(path.resolve(__dirname, '../build')));
 
 
-app.use("/api", require("./routes"));
+app.use("/api", require("./api"));
 
 // Requests unhandled before will return the react app
 app.get('*', (req, res) => {
