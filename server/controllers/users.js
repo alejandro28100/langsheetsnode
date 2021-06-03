@@ -32,6 +32,17 @@ const User = mongoose.model("User");
 //         }
 //     }
 // }
+async function getUsers(req, res) {
+    try {
+        const users = await User.find();
+        res.json(users);
+    } catch (error) {
+        res.status(400).send({
+            code: error.name,
+            message: error.message
+        })
+    }
+}
 
 async function createUser(req, res) {
     try {
@@ -93,7 +104,7 @@ async function deleteUser(req, res) {
 
 module.exports = {
     // getUser,
-    // getUsers,
+    getUsers,
     createUser,
     deleteUser
     // updateUser,

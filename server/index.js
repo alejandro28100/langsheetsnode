@@ -27,13 +27,15 @@ app.use(helmet());
 //Serve the files of the built React app folder
 app.use(express.static(path.resolve(__dirname, '../build')));
 
+app.use("/", require("./routes"));
 
-app.use("/api", require("./api"));
 
-// Requests unhandled before will return the react app
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../build', 'index.html'));
-});
+// app.use("/api", require("./routes/api"));
+
+// // Requests unhandled before will return the react app
+// app.get('*', (req, res) => {
+//     res.sendFile(path.resolve(__dirname, '../build', 'index.html'));
+// });
 
 server.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
