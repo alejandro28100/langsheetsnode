@@ -44,7 +44,17 @@ UserSchema.methods.validatePassword = function (password) {
     return bcrypt.compareSync(password, this.password);
 }
 
-
+UserSchema.methods.getPublicInfo = function (token) {
+    // console.log(this);
+    return this;
+    // return {
+    //     id: this._id,
+    //     username: this.username,
+    //     lastName: this.lastName,
+    //     activities: this.activities,
+    //     token,
+    // }
+}
 
 UserSchema.plugin(uniqueValidator, { message: "It already exists" });
 

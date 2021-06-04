@@ -4,6 +4,7 @@ const express = require("express"),
     io = require("./webSocket"),
     http = require("http"),
     helmet = require("helmet");
+const connect = require("./database");
 
 // cors = require('cors');
 
@@ -17,7 +18,7 @@ const server = http.createServer(app);
 
 io(server);
 
-require("./mongodb");
+connect();
 
 //Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -29,14 +30,6 @@ app.use(express.static(path.resolve(__dirname, '../build')));
 
 app.use("/", require("./routes"));
 
-
-// app.use("/api", require("./routes/api"));
-
-// // Requests unhandled before will return the react app
-// app.get('*', (req, res) => {
-//     res.sendFile(path.resolve(__dirname, '../build', 'index.html'));
-// });
-
 server.listen(PORT, () => {
-    console.log(`Server listening on ${PORT}`);
+    console.log(`> Server listening on ${PORT}`);
 });

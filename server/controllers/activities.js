@@ -42,14 +42,9 @@ async function createActivity(req, res) {
     try {
         await activity.validate();
 
-        activity
-            .save()
-            .then(result => {
-                res.status(201).send(result);
-            })
-            .catch(err => {
-                res.send(err);
-            });
+        const result = activity.save();
+
+        res.status(201).send(result);
     } catch (error) {
         //Send error if validation fails
         res.status(400).send({

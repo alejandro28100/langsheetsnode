@@ -10,7 +10,6 @@ router.get('/', (req, res) => {
 });
 
 router.use('/activities', require('./activities'));
-
 router.use("/users", require("./users"));
 
 // Unhandled requests in /api will return a 404 status

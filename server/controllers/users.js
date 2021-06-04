@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
-
 const User = mongoose.model("User");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 // async function getActivities(req, res) {
 //     try {
@@ -102,10 +103,42 @@ async function deleteUser(req, res) {
 
 }
 
+async function loginUser(req, res) {
+    const { email, password } = req.body;
+    try {
+        const user = await User.findOne({ email: email });
+        if (!user) throw { code: 'inexistent-user', message: "El usuario solicitado no existe" };
+
+        const isCorrect = bcrypt.compareSync(password, user.password);
+        if (!isCorrect) throw { code: 'wrong-password', message: "La contraseña es incorrecta" };
+
+        const publicUser = getPublicInfo(user);
+        const token = jwt.sign({ userID: publicUser.id }, process.env.SECRET_TOKEN);
+        res.json({
+            ...publicUser,
+            token
+        });
+
+    } catch (error) {
+        res.status(401).json(error);
+    }
+}
+
+function getPublicInfo(user) {
+    return {
+        id: user._id,
+        name: user.name,
+        lastName: user.lastName,
+        activities: user.activities,
+        email: user.email,
+        createdAt: user.createdAt
+    }
+}
 module.exports = {
     // getUser,
     getUsers,
     createUser,
-    deleteUser
+    deleteUser,
+    loginUser
     // updateUser,
 }
