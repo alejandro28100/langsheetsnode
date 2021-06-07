@@ -15,6 +15,16 @@ async function getUsers(req, res) {
     }
 }
 
+async function getUser(req, res) {
+    const { userID } = req.user;
+    try {
+        const user = await User.findById(userID);
+        res.json(getPublicInfo(user));
+    } catch (error) {
+        res.status(401).json(error);
+    }
+}
+
 async function createUser(req, res) {
     try {
         const user = new User(req.body);
@@ -80,7 +90,7 @@ function getPublicInfo(user) {
     }
 }
 module.exports = {
-    // getUser,
+    getUser,
     getUsers,
     createUser,
     deleteUser,
