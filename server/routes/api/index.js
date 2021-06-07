@@ -1,6 +1,5 @@
 let router = require('express').Router();
 
-
 //Models
 require("../../models/Activity");
 require("../../models/User");

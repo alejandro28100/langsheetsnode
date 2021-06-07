@@ -3,9 +3,15 @@ const mongoose = require("mongoose");
 const Activity = mongoose.model("Activity");
 
 async function getActivities(req, res) {
+
+    const { userID } = req.user;
+
     try {
-        const activities = await Activity.find({});
-        console.log(activities);
+        const activities = await Activity.find({
+            author: {
+                id: userID
+            }
+        });
         res.send(activities);
     } catch (error) {
         res.send(error)

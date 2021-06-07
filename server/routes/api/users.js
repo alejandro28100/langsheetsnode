@@ -3,8 +3,8 @@ const jwt = require("jsonwebtoken");
 
 const { createUser, deleteUser, getUsers, loginUser } = require("../../controllers/users");
 
-router.get("/login", loginUser);
 router.get("/", getUsers);
+router.post("/login", loginUser);
 router.post("/", createUser);
 router.delete("/:id", [authenticate, verifyPermisson], deleteUser);
 
