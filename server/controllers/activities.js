@@ -7,11 +7,11 @@ async function getActivities(req, res) {
     const { userID } = req.user;
 
     try {
-        const activities = await Activity.find({
-            author: {
-                id: userID
-            }
-        });
+        const activities = await Activity
+            .find()
+            .where("author.id")
+            .equals(userID);
+
         res.send(activities);
     } catch (error) {
         res.send(error)
