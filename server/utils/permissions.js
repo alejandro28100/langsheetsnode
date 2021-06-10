@@ -39,7 +39,23 @@ function verifyPermission(req, res, next) {
     next();
 }
 
+//Make sure an activity belongs to the person is triying to update it
+function verifyOwnership(req, res, next) {
+    const { user } = req;
+    const { id } = activity.author;
+
+    if (id !== user.userID) {
+        res.json({
+            code: 'forbidden',
+            message: "No tienes los permisos para realizar esta acción"
+        })
+        return;
+    }
+    next();
+}
+
 module.exports = {
+    verifyOwnership,
     verifyPermission,
     authenticate
 }
