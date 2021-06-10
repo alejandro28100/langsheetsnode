@@ -48,12 +48,11 @@ async function createActivity(req, res) {
     try {
         await activity.validate();
 
-        const result = activity.save();
-
-        res.status(201).send(result);
+        const result = await activity.save();
+        res.status(201).json(result);
     } catch (error) {
         //Send error if validation fails
-        res.status(400).send({
+        res.status(400).json({
             code: error.name,
             message: error.message
         })

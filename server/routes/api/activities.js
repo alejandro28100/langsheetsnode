@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const jwt = require("jsonwebtoken");
 const { authenticate } = require("../../utils/permissions");
 
 const { getActivity, getActivities, createActivity, updateActivity, deleteActivity } = require("../../controllers/activities");
