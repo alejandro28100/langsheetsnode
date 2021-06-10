@@ -15,7 +15,7 @@ async function getUsers(req, res) {
     }
 }
 
-async function getUser(req, res) {
+async function getUserInfo(req, res) {
     const { userID } = req.user;
     try {
         const user = await User.findById(userID);
@@ -62,7 +62,7 @@ async function loginUser(req, res) {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email: email });
-        if (!user) throw { code: 'inexistent-user', message: "El usuario solicitado no existe" };
+        if (!user) throw { code: 'inexistent-user', message: "No existe ninguna cuenta asociada con el correo brindado.\n Verifique su correo" };
 
         const isCorrect = bcrypt.compareSync(password, user.password);
         if (!isCorrect) throw { code: 'wrong-password', message: "La contraseña es incorrecta" };
@@ -90,7 +90,8 @@ function getPublicInfo(user) {
     }
 }
 module.exports = {
-    getUser,
+    // getUser,
+    getUserInfo,
     getUsers,
     createUser,
     deleteUser,
