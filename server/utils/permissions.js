@@ -41,8 +41,8 @@ function verifyPermission(req, res, next) {
 
 //Make sure an activity belongs to the person is triying to update it
 function verifyOwnership(req, res, next) {
-    const { user } = req;
-    const { id } = activity.author;
+    const { user, body } = req;
+    const { id } = body.author;
 
     if (id !== user.userID) {
         res.json({
