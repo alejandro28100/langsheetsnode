@@ -61,20 +61,23 @@ async function createActivity(req, res) {
 
 async function updateActivity(req, res) {
     const { id } = req.params;
-
+    const { property, value } = req.body;
     let modifications = {}
 
     //make sure only certains props can be modified from req.body 
-    Object.keys(req.body).forEach(prop => {
-        if (["title", "content", "lang", "published"].includes(prop)) {
-            let value = req.body[prop];
-            //make sure props are not undefined or null 
-            if (value !== undefined || value !== null) {
-                modifications[prop] = value;
-            }
+    if (["title", "content", "lang", "published"].includes(property)) {
+        //make sure prop values are not undefined or null 
+        if (value !== undefined || value !== null) {
+            modifications[property] = value;
         }
-    })
+    }
 
+    if (Object.keys(modifications).length === 0) {
+        res.status(401).send({ message: "Ningún dato fué enviado" });
+        return;
+    }
+
+    console.log("Update", modifications, "to ", id);
     try {
         const doc = await Activity.findOneAndUpdate({ _id: id }, modifications, { new: true, useFindAndModify: false });
         res.send(doc);
