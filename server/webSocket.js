@@ -7,7 +7,7 @@ const webSocket = server => {
     io.use(registerUser);
 
     io.on('connection', (socket) => {
-        console.log(`> ${socket.username} connected to the server`)
+        console.log(`> ${socket.username || "New user"} connected to the server`)
 
         socket.on('join-room', async (roomID) => {
             console.log(`> Joining ${socket.username} (${socket.id}) to room ${roomID}`);
@@ -43,17 +43,19 @@ const webSocket = server => {
                     .emit('send-updated-content', socket.id);
                 console.log(`> Ask ${randomUser.username} to send the updated content to ${socket.username}`);
             }
-
-
-
         })
+
+        socket.on("content-change", operations => {
+            socket.to(socket.roomID).emit("content-change", operations);
+        })
+        //For testing
+        socket.on('content change', (operations) => {
+            console.log("Sending operations", operations);
+            socket.broadcast.emit('content change', operations);
+        });
 
         socket.on('send-updated-content', (userID, content) => {
             socket.to(userID).emit('action', { type: 'update-content', content });
-        });
-
-        socket.on('action', (action) => {
-            socket.to(socket.roomID).emit('action', action);
         });
 
         socket.on("disconnect", async () => {
