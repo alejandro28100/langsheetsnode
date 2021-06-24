@@ -2,6 +2,16 @@ const mongoose = require("mongoose");
 
 const Activity = mongoose.model("Activity");
 
+async function getPublicActivities(req, res) {
+    try {
+        const activities = await Activity
+            .find({ published: true, private: false });
+        res.send(activities);
+    } catch (error) {
+        res.send(error);
+    }
+}
+
 async function getActivities(req, res) {
 
     const { userID } = req.user;
@@ -38,7 +48,6 @@ async function getActivity(req, res) {
         }
     }
 
-
 }
 
 async function createActivity(req, res) {
@@ -65,7 +74,7 @@ async function updateActivity(req, res) {
     let modifications = {}
 
     //make sure only certains props can be modified from req.body 
-    if (["title", "content", "lang", "published"].includes(property)) {
+    if (["title", "content", "lang", "published", "private"].includes(property)) {
         //make sure prop values are not undefined or null 
         if (value !== undefined || value !== null) {
             modifications[property] = value;
@@ -77,7 +86,7 @@ async function updateActivity(req, res) {
         return;
     }
 
-    console.log("Update", modifications, "to ", id);
+    // console.log("Update", modifications, "to ", id);
     try {
         const doc = await Activity.findOneAndUpdate({ _id: id }, modifications, { new: true, useFindAndModify: false });
         res.send(doc);
@@ -93,7 +102,7 @@ async function deleteActivity(req, res) {
     try {
         await Activity.deleteOne({ _id: id })
         res.send({
-            message: 'sucess'
+            message: 'success'
         });
     } catch (error) {
         res.status(500).send(error);
@@ -103,6 +112,7 @@ async function deleteActivity(req, res) {
 
 
 module.exports = {
+    getPublicActivities,
     getActivity,
     getActivities,
     createActivity,
