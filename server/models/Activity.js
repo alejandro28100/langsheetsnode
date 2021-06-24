@@ -32,6 +32,10 @@ const ActivitySchema = new Schema({
         type: Boolean,
         required: true
     },
+    private: {
+        type: Boolean,
+        required: true
+    },
     author: {
         type: AuthorInfo,
         required: true
