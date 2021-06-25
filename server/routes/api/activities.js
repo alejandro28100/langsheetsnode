@@ -1,14 +1,17 @@
 const router = require('express').Router();
-const { authenticate, verifyOwnership } = require("../../utils/permissions");
+const { authenticate } = require("../../utils/permissions");
 
-const { getActivity, getActivities, createActivity, updateActivity, deleteActivity } = require("../../controllers/activities");
+const { getActivity, getPublicActivities, getActivities, createActivity, updateActivity, deleteActivity } = require("../../controllers/activities");
 
+//Get all the public activities
+router.get("/public", authenticate, getPublicActivities);
 
-router.post("/", [authenticate], createActivity);
-router.put("/:id", [authenticate, verifyOwnership], updateActivity);
-router.get("/", [authenticate], getActivities);
+//Get the activities of a user
+router.get("/", authenticate, getActivities);
+
 router.get("/:id", getActivity);
-// router.put("/:id", [authenticate], updateActivity);
-router.delete("/:id", [authenticate, verifyOwnership], deleteActivity);
+router.post("/", authenticate, createActivity);
+router.put("/:id", authenticate, updateActivity);
+router.delete("/:id", authenticate, deleteActivity);
 
 module.exports = router;
