@@ -9,7 +9,7 @@ const AuthorInfo = new Schema({
     name: String,
     lastName: String,
     id: String
-})
+}, { _id: false });
 
 const ActivitySchema = new Schema({
     createdAt: {
