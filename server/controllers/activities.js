@@ -12,7 +12,7 @@ async function getPublicActivities(req, res) {
             private: false,
             //Avoid fetching activities the user has created
             'author.id': {
-                $ne: '60c7ef133ca7ad352cac91e3'
+                $ne: user.userID
             }
         }
 
