@@ -16,7 +16,7 @@ async function getPublicActivities(req, res) {
             }
         }
 
-        if (language) filters.language = language;
+        if (language) filters.lang = language;
         if (keywords) filters.$text = { $search: keywords };
         console.log(filters);
         const activities = await Activity.find(filters);
