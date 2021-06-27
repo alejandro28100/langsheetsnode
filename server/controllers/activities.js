@@ -3,12 +3,28 @@ const mongoose = require("mongoose");
 const Activity = mongoose.model("Activity");
 
 async function getPublicActivities(req, res) {
+    const { user, query } = req;
+    const { language, keywords } = query;
+
     try {
-        const activities = await Activity
-            .find({ published: true, private: false });
+        const filters = {
+            published: true,
+            private: false,
+            //Avoid fetching activities the user has created
+            'author.id': {
+                $ne: '60c7ef133ca7ad352cac91e3'
+            }
+        }
+
+        if (language) filters.language = language;
+        if (keywords) filters.$text = { $search: keywords };
+        console.log(filters);
+        const activities = await Activity.find(filters);
+
         res.send(activities);
     } catch (error) {
-        res.send(error);
+        console.log(error);
+        res.status(400).send(error);
     }
 }
 

@@ -46,7 +46,7 @@ const ActivitySchema = new Schema({
         collection: "Activities"
     }
 );
-
+ActivitySchema.index({ content: "text" });
 ActivitySchema.plugin(uniqueValidator, { message: "It already exists" });
 
 mongoose.model("Activity", ActivitySchema);
