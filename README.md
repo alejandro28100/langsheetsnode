@@ -31,8 +31,8 @@ Aplicación de actividades en tiempo real (profesor y alumnos) y de manera asín
 
 Impresión de actividades
 
- 
+ ## Links
 
 [Langsheets React App](https://github.com/alejandro28100/langsheets)
 
-[Link de la app (NodeJS con Express) hosteada en Heroku](https://langsheets.herokuapp.com/)
+[Link de la app hosteada en Heroku](https://langsheets.herokuapp.com/)
